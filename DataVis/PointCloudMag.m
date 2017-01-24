@@ -2,7 +2,7 @@
 
 mags = 8;
 
-fileID = fopen('MagDat3.txt','r');
+fileID = fopen('PracticeData/MagDat3.txt','r');
 formatSpec = '%f';
 sizeA = [3 Inf];
 
@@ -20,11 +20,17 @@ arr = ['r','g','b','k','y','m','c','w'];
 % 3 has broken z
 % 4 has huge Z offset
 
-for c=1:mags
+for c=3
     
 x1=B(c,1,:);
 y1=B(c,2,:);
 z1=B(c,3,:);
+
+Ell = [x1; y1; z1];
+Ell = permute(Ell,[1,3,2]);
+Ell = Ell';
+
+[ center, radii, evecs, v, chi2 ] = ellipsoid_fit(Ell,'0')
 
 
 scatter3(x1,y1,z1,'MarkerFaceColor',arr(c))
@@ -33,8 +39,9 @@ hold on
 
 end
 
+
 axis equal
-axis([-1000 1000 -1000 1000 -1000 1000])
+%axis([-1000 1000 -1000 1000 -1000 1000])
 hold off
 
 
