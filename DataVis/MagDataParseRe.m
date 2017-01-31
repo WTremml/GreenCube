@@ -1,6 +1,6 @@
 mags = 8;
 
-fileID = fopen('MagDat2.txt','r');
+fileID = fopen('PracticeData/MagDat4.txt','r');
 formatSpec = '%f';
 sizeA = [3 Inf];
 
@@ -91,7 +91,7 @@ q = quiver3(Xre,Yre,Zre,B(:,1,j)*sfactor,B(:,2,j)*sfactor,B(:,3,j)*sfactor,'Auto
 axis([-1 6.6 -1 5.8 -2 2])
 view(-45,60)
 
-
+%{
 %Coloring code from:
 %http://stackoverflow.com/questions/29632430/quiver3-arrow-color-corresponding-to-magnitude
 
@@ -122,7 +122,7 @@ set(q.Tail, ...
     
     
     
-    
+    %}
     
     
     drawnow

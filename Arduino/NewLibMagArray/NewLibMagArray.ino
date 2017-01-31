@@ -98,7 +98,7 @@ void initializemag(int magnum)
 void setup(void) 
 {
   // setting baud rate
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   //Needed to initialize Wire commands
   Wire.begin();
@@ -150,8 +150,7 @@ void loop(void)
             delay(1);
       
         }
-        Serial.println("END");
-        delay(3000);
+        delay(1);
  /*    }
   }*/
 }

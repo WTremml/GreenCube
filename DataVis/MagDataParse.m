@@ -1,6 +1,9 @@
-mags = 8;
+clear all
 
-fileID = fopen('MagDat2.txt','r');
+mags = 8;
+pause on;
+
+fileID = fopen('PracticeData/MagDat6.txt','r');
 formatSpec = '%f';
 sizeA = [3 Inf];
 
@@ -12,6 +15,26 @@ num = num/mags;
 
 B = reshape(A,3,mags,num);
 B = permute(B,[2 1 3]);
+C=B;
+
+
+[Center, Radii] = magCal();
+
+for e=1:8
+    
+    B(e,1,:)=B(e,1,:)-Center(1);
+    B(e,2,:)=B(e,2,:)-Center(2);
+    B(e,3,:)=B(e,3,:)-Center(3);
+    
+    
+    B(e,1,:)=B(e,1,:)/Radii(3)*400;
+    B(e,2,:)=B(e,2,:)/Radii(2)*400;
+    B(e,3,:)=B(e,3,:)/Radii(1)*400;
+    
+    
+end
+
+
 
 % 5.6" x 4.8" board
 Loc = [0,0;
@@ -25,8 +48,11 @@ Loc = [0,0;
 
 Xre = Loc(:,1);
 Yre = Loc(:,2);
+Zre = zeros(size(Xre));
 
-qpoints = 30;
+%V = zeros(mags,3,num);
+
+qpoints = 5;
 qp = qpoints*qpoints;
 
 Xq = linspace(0, 6.6, qpoints);
@@ -53,19 +79,36 @@ sfactor = .005;
 
 %% 
 
-
 figure
-q = quiver3(Xq2,Yq2,Zq2,Vx(:,:,1)*sfactor,Vy(:,:,1)*sfactor,Vz(:,:,1)*sfactor,'AutoScale',...
+
+subplot(2,2,1)
+qi = quiver3(Xq2,Yq2,Zq2,Vx(:,:,1)*sfactor,Vy(:,:,1)*sfactor,Vz(:,:,1)*sfactor,'AutoScale',...
     'off','LineWidth',2,'Clipping','off');
 axis([-1 6.6 -1 5.8 -2 2])
-view(-45,60)
-colorbar
+view(-45,45)
+%colorbar
+
+
+subplot(2,2,2)
+qe = quiver3(Xre,Yre,Zre,B(:,1,1)*sfactor,B(:,2,1)*sfactor,B(:,3,1)*sfactor,'AutoScale',...
+    'off','LineWidth',2,'Clipping','off','color',[1 0 0]);
+axis([-1 6.6 -1 5.8 -2 2])
+view(-45,45)
+%colorbar
+
+subplot(2,2,3)
+qe = quiver3(Xre,Yre,Zre,C(:,1,1)*sfactor,C(:,2,1)*sfactor,C(:,3,1)*sfactor,'AutoScale',...
+    'off','LineWidth',2,'Clipping','off','color',[0 1 0]);
+axis([-1 6.6 -1 5.8 -2 2])
+view(-45,45)
+
+
 
 %%%%%%%%%%
 ax = gca;
 ax.NextPlot = 'replaceChildren';
 
-
+%{
 %Coloring code from:
 %http://stackoverflow.com/questions/29632430/quiver3-arrow-color-corresponding-to-magnitude
 
@@ -93,18 +136,44 @@ set(q.Head, ...
 set(q.Tail, ...
     'ColorBinding', 'interpolated', ...
     'ColorData', reshape(cmap(1:2,:,:), [], 4).');
+
+%}
 
 %% 
 loops = num;
 
+
 M(loops) = struct('cdata',[],'colormap',[]);
 for j = 1:loops
 
-q = quiver3(Xq2,Yq2,Zq2,Vx(:,:,j)*sfactor,Vy(:,:,j)*sfactor,Vz(:,:,j)*sfactor,'AutoScale',...
-    'off','LineWidth',2,'Clipping','off');
-axis([-1 6.6 -1 5.8 -2 2])
-view(-45,60)
+    
+    subplot(2,2,1)
+    qi = quiver3(Xq2,Yq2,Zq2,Vx(:,:,j)*sfactor,Vy(:,:,j)*sfactor,Vz(:,:,j)*sfactor,'AutoScale',...
+        'off','LineWidth',2,'Clipping','off');
+    axis([-1 6.6 -1 5.8 -2 2])
+    view(-45,45)
+    %colorbar
 
+    
+   
+    subplot(2,2,2)
+    qe = quiver3(Xre,Yre,Zre,B(:,1,j)*sfactor,B(:,2,j)*sfactor,B(:,3,j)*sfactor,'AutoScale',...
+        'off','LineWidth',2,'Clipping','off','color',[1 0 0]);
+    axis([-1 6.6 -1 5.8 -2 2])
+    view(-45,45)
+    %colorbar
+    
+    
+    
+    
+    subplot(2,2,3)
+    qe = quiver3(Xre,Yre,Zre,C(:,1,j)*sfactor,C(:,2,j)*sfactor,C(:,3,j)*sfactor,'AutoScale',...
+    'off','LineWidth',2,'Clipping','off','color',[0 1 0]);
+    axis([-1 6.6 -1 5.8 -2 2])
+    view(-45,45)
+
+
+%{
 
 %Coloring code from:
 %http://stackoverflow.com/questions/29632430/quiver3-arrow-color-corresponding-to-magnitude
@@ -135,9 +204,9 @@ set(q.Tail, ...
     'ColorData', reshape(cmap(1:2,:,:), [], 4).');
     
     
+    %}
     
-    
-    
+    pause(.05);
     
     drawnow
     M(j) = getframe;

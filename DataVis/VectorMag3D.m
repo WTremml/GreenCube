@@ -15,7 +15,7 @@
 % find the correct port by using 'instrfindall'
 % comPort = input('Input correct port by using ''instrfindall'' ')
 comPort = '/dev/tty.usbmodem1411';
-magnum = 18;
+magnum = 8;
 
 %% Initializes port
 
@@ -54,17 +54,19 @@ scale=1000;
 %debugging line
 %disp('Still Good')
 
+[Center, Radii] = magCal();
+
 while get(button, 'UserData')
 [gx, gy, gz] = readMag(magnetometer, magnum);
 
 for z =1:magnum
-    gx(z) = gx(z)-OverallCent(1,z);
-    gy(z) = gy(z)-OverallCent(2,z);
-    gz(z) = gz(z)-OverallCent(3,z);
+    gx(z) = gx(z)-Center(1);
+    gy(z) = gy(z)-Center(2);
+    gz(z) = gz(z)-Center(3);
     
-    gx(z) = gx(z)/RadiiAll(3,z)*400;
-    gy(z) = gy(z)/RadiiAll(2,z)*400;
-    gz(z) = gz(z)/RadiiAll(1,z)*400;
+    gx(z) = gx(z)/RadiiAll(3)*400;
+    gy(z) = gy(z)/Radii(2)*400;
+    gz(z) = gz(z)/RadiiAll(1)*400;
 end 
 
 cla;

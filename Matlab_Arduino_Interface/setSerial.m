@@ -10,7 +10,7 @@ delete(instrfindall)
 s = serial(comPort);
 set(s,'Databits',8);
 set(s,'Stopbits',1);
-set(s,'BaudRate',115200);
+set(s,'BaudRate',19200);
 set(s,'Parity','none');
 set(s, 'terminator', 'LF'); 
 
