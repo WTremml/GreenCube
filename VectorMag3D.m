@@ -14,8 +14,8 @@ clear all
 
 % find the correct port by using 'instrfindall'
 % comPort = input('Input correct port by using ''instrfindall'' ')
-comPort = '/dev/tty.usbmodemFA141';
-magnum = 18;
+comPort = '/dev/tty.usbmodem1441';
+magnum = 8;
 
 %% Initializes port
 

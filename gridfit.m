@@ -549,49 +549,49 @@ else
       Areg = [Areg;sparse(repmat((1:m)',1,2),[ind+1,ind+ny], ...
         stiffness*[-1 1],m,ngrid)];
       
-    case {'diffusion' 'laplacian'}
-      % thermal diffusion using Laplacian (del^2)
-      [i,j] = meshgrid(1:nx,2:(ny-1));
-      ind = j(:) + ny*(i(:)-1);
-      dy1 = dy(j(:)-1)/params.yscale;
-      dy2 = dy(j(:))/params.yscale;
-      
-      Areg = sparse(repmat(ind,1,3),[ind-1,ind,ind+1], ...
-        xyRelativeStiffness(2)*[-2./(dy1.*(dy1+dy2)), ...
-        2./(dy1.*dy2), -2./(dy2.*(dy1+dy2))],ngrid,ngrid);
-      
-      [i,j] = meshgrid(2:(nx-1),1:ny);
-      ind = j(:) + ny*(i(:)-1);
-      dx1 = dx(i(:)-1)/params.xscale;
-      dx2 = dx(i(:))/params.xscale;
-      
-      Areg = Areg + sparse(repmat(ind,1,3),[ind-ny,ind,ind+ny], ...
-        xyRelativeStiffness(1)*[-2./(dx1.*(dx1+dx2)), ...
-        2./(dx1.*dx2), -2./(dx2.*(dx1+dx2))],ngrid,ngrid);
-      
-    case 'gradient'
-      % Subtly different from the Laplacian. A point for future
-      % enhancement is to do it better for the triangle interpolation
-      % case.
-      [i,j] = meshgrid(1:nx,2:(ny-1));
-      ind = j(:) + ny*(i(:)-1);
-      dy1 = dy(j(:)-1)/params.yscale;
-      dy2 = dy(j(:))/params.yscale;
-      
-      Areg = sparse(repmat(ind,1,3),[ind-1,ind,ind+1], ...
-        xyRelativeStiffness(2)*[-2./(dy1.*(dy1+dy2)), ...
-        2./(dy1.*dy2), -2./(dy2.*(dy1+dy2))],ngrid,ngrid);
-      
-      [i,j] = meshgrid(2:(nx-1),1:ny);
-      ind = j(:) + ny*(i(:)-1);
-      dx1 = dx(i(:)-1)/params.xscale;
-      dx2 = dx(i(:))/params.xscale;
-      
-      Areg = [Areg;sparse(repmat(ind,1,3),[ind-ny,ind,ind+ny], ...
-        xyRelativeStiffness(1)*[-2./(dx1.*(dx1+dx2)), ...
-        2./(dx1.*dx2), -2./(dx2.*(dx1+dx2))],ngrid,ngrid)];
-      
-  end
+                                            case {'diffusion' 'laplacian'}
+                                              % thermal diffusion using Laplacian (del^2)
+                                              [i,j] = meshgrid(1:nx,2:(ny-1));
+                                              ind = j(:) + ny*(i(:)-1);
+                                              dy1 = dy(j(:)-1)/params.yscale;
+                                              dy2 = dy(j(:))/params.yscale;
+
+                                              Areg = sparse(repmat(ind,1,3),[ind-1,ind,ind+1], ...
+                                                xyRelativeStiffness(2)*[-2./(dy1.*(dy1+dy2)), ...
+                                                2./(dy1.*dy2), -2./(dy2.*(dy1+dy2))],ngrid,ngrid);
+
+                                              [i,j] = meshgrid(2:(nx-1),1:ny);
+                                              ind = j(:) + ny*(i(:)-1);
+                                              dx1 = dx(i(:)-1)/params.xscale;
+                                              dx2 = dx(i(:))/params.xscale;
+
+                                              Areg = Areg + sparse(repmat(ind,1,3),[ind-ny,ind,ind+ny], ...
+                                                xyRelativeStiffness(1)*[-2./(dx1.*(dx1+dx2)), ...
+                                                2./(dx1.*dx2), -2./(dx2.*(dx1+dx2))],ngrid,ngrid);
+
+                                            case 'gradient'
+                                              % Subtly different from the Laplacian. A point for future
+                                              % enhancement is to do it better for the triangle interpolation
+                                              % case.
+                                              [i,j] = meshgrid(1:nx,2:(ny-1));
+                                              ind = j(:) + ny*(i(:)-1);
+                                              dy1 = dy(j(:)-1)/params.yscale;
+                                              dy2 = dy(j(:))/params.yscale;
+
+                                              Areg = sparse(repmat(ind,1,3),[ind-1,ind,ind+1], ...
+                                                xyRelativeStiffness(2)*[-2./(dy1.*(dy1+dy2)), ...
+                                                2./(dy1.*dy2), -2./(dy2.*(dy1+dy2))],ngrid,ngrid);
+
+                                              [i,j] = meshgrid(2:(nx-1),1:ny);
+                                              ind = j(:) + ny*(i(:)-1);
+                                              dx1 = dx(i(:)-1)/params.xscale;
+                                              dx2 = dx(i(:))/params.xscale;
+
+                                              Areg = [Areg;sparse(repmat(ind,1,3),[ind-ny,ind,ind+ny], ...
+                                                xyRelativeStiffness(1)*[-2./(dx1.*(dx1+dx2)), ...
+                                                2./(dx1.*dx2), -2./(dx2.*(dx1+dx2))],ngrid,ngrid)];
+
+                                          end
   nreg = size(Areg,1);
   
   % Append the regularizer to the interpolation equations,
