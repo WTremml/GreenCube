@@ -1,4 +1,4 @@
-function [ gx, gy, gz ] = readMag( out, magnum)
+function [ gx, gy, gz ] = readMag(out, magnum)
 %readMag Stores magnetometer data into three arrays
 %   Each array is length magnum
 
@@ -9,8 +9,6 @@ for c =1:magnum
     gy(1,c)=fscanf(out.s,'%f');
     gz(1,c)=fscanf(out.s,'%f');
 end
-    
-    
 
 
 end
