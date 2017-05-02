@@ -35,7 +35,7 @@ if (cal == 'Y')
     
     samples = input('Enter an integer number of samples to take ');
     
-    disp('waiting to start taking samples');
+    disp('waiting to start taking samples, press space bar once you are ready');
     pause;
 
     B = storeMagData(magnetometer, magnum, samples);
@@ -73,7 +73,7 @@ end
 %% Continuously reads magnetometer data
 
 %arbitrary scale
-scale = 500;
+scale = 2;
 
 %debugging line
 %disp('Still Good')
@@ -114,13 +114,30 @@ end
 [yBase(7),yBase(15),yBase(23)] = deal(9.6);
 [yBase(8),yBase(16),yBase(24)] = deal(9.6);
 
-axis([-5 15 -15 15 -10 10]);
+
+x=-4:4:16;
+y=-4:3.6:14;
+z=-4:3.6:14;
+[x,y,z]=meshgrid(x,y,z);
+
+subplot(2,1,1)
+axis([-4 16 -4 14 -4 14]);
 title('Scaled Vectors');
 % title('Raw Vectors');
 xlabel('X-Axis magnitude');
 ylabel('Y-Axis magnitude');
 zlabel('Z-Axis magnitude');
 grid on
+colorbar
+
+subplot(2,1,2)
+title('Divergence');
+xlabel('X-Axis');
+ylabel('Y-Axis');
+zlabel('Z-Axis');
+grid on
+colorbar
+
 
 while get(button, 'UserData')
     % raw mag data points
@@ -132,35 +149,73 @@ while get(button, 'UserData')
     % scaled mag data (all variables with S)
     [sx, sy, sz] = applyScale(gx, gy, gz, center, radii, scale);
     
-    % 3D colored arrows
-    mag = (((gx).^2 + (gy).^2 + (gz).^2).^(-.5));
-    scmag = mag / max(mag);
-    
-    magS = (((sx).^2 + (sy).^2 + (sz).^2).^(-.5));
-    scmagS = magS / max(magS);
-    
-    % creates RGB scale for quiver3D arrows
-%     arrowcolors = [ones(magnum,1) - scmag, zeros(magnum,1), scmag];
-%     arrowcolorsS = [ones(magnum,1) - scmagS, zeros(magnum,1), scmagS];
 
-    % plot raw vectors
-%     subplot(1,2,1)
-%     qHandle = quiver3D([xBase.',yBase.',zBase.'], .01*[gx, gy, gz],arrowcolors);
-%     cla;
+    %interpolated
+    % Using function to interpolate.
+
+    
+    Fu=scatteredInterpolant(xBase',yBase',zBase',sx,'natural','linear');
+    Fv=scatteredInterpolant(xBase',yBase',zBase',sy,'natural','linear');
+    Fw=scatteredInterpolant(xBase',yBase',zBase',sz,'natural','linear');
+
+    
+    uu=Fu(x,y,z);
+    vv=Fv(x,y,z);
+    ww=Fw(x,y,z);
+    
+    %Interpolated Quiver
+    
+    
+    subplot(1,2,1)
+    q =quiver3(x,y,z,uu,vv,ww,'Autoscale','off');
+    
+            %// Compute the magnitude of the vectors
+            mags = sqrt(sum(cat(2, q.UData(:), q.VData(:), ...
+                        reshape(q.WData, numel(q.UData), [])).^2, 2));
+
+            %// Get the current colormap
+            currentColormap = colormap(gca);
+
+            %// Now determine the color to make each arrow using a colormap
+            [~, ~, ind] = histcounts(mags, size(currentColormap, 1));
+
+            %// Now map this to a colormap to get RGB
+            cmap = uint8(ind2rgb(ind(:), currentColormap) * 255);
+            cmap(:,:,4) = 255;
+            cmap = permute(repmat(cmap, [1 3 1]), [2 1 3]);
+
+            %// We repeat each color 3 times (using 1:3 below) because each arrow has 3 vertices
+            set(q.Head, ...
+                'ColorBinding', 'interpolated', ...
+                'ColorData', reshape(cmap(1:3,:,:), [], 4).');   %'
+
+            %// We repeat each color 2 times (using 1:2 below) because each tail has 2 vertices
+            set(q.Tail, ...
+                'ColorBinding', 'interpolated', ...
+                'ColorData', reshape(cmap(1:2,:,:), [], 4).');
+    colorbar
+    
+    
+    axis([-4 16 -4 14 -4 14]);
+    hold on
     
     % 3D Quiver
-%     quiver3(xBase,yBase,zBase,gx.',gy.',gz.')
-%     drawnow;
+    quiver3(xBase,yBase,zBase,sx.',sy.',sz.','Autoscale','off')
+    hold off
     
-    % plot scaled vectors
-%     subplot(1,2,2)
-%     qHandleS = quiver3D([xBase.',yBase.',zBase.'], .001*[sx, sy, sz],arrowcolorsS);
-%     drawnow;
-%     cla;
-
-    % 3D Quiver
-    quiver3(xBase,yBase,zBase,sx.',sy.',sz.')
-    axis([-5 15 -15 15 -10 10]);
+    
+    
+    div=divergence(x,y,z,uu,vv,ww);
+    
+    subplot(1,2,2)
+    xslice = [16,6]; 
+    yslice = 14; 
+    zslice = [-4,6];
+    slice(x,y,z,div,xslice,yslice,zslice)
+    colorbar
+    
+    
+    
     drawnow;
     cla;
 end
